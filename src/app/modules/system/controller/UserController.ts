@@ -1,13 +1,23 @@
-import { Controller, Get, Inject, Param, Provide } from '@midwayjs/decorator';
+import {
+  ALL,
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Provide,
+} from '@midwayjs/decorator';
 import UserDTO from '../service/dto/UserDTO';
 import { Context } from '@midwayjs/web';
-import UserServiceImpl from '../service/impl/UserServiceImpl';
+import User from '../domain/User';
+import UserService from '../service/UserService';
 
 @Provide()
 @Controller('/api')
 export class UserController {
-  @Inject()
-  userService: UserServiceImpl;
+  @Inject('UserServiceImpl')
+  userService: UserService;
 
   @Inject()
   ctx: Context;
@@ -16,5 +26,10 @@ export class UserController {
   async getUserById(@Param() id: number): Promise<UserDTO> {
     const user = await this.userService.getUserById(id);
     return user;
+  }
+
+  @Post('/user/create')
+  async create(@Body(ALL) user: User): Promise<void> {
+    await this.userService.create(user);
   }
 }
